@@ -9,7 +9,8 @@ import requests
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 
-CLIENT_ID = json.loads(open('client_secret.json', 'r').read())['web']['client_id']
+CLIENT_ID = json.loads(open('client_secret.json', 'r')
+                       .read())['web']['client_id']
 
 app = Flask(__name__)
 
@@ -17,6 +18,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///catalog'
 app.config['SECRET_KEY'] = 'secret'
 
 db = SQLAlchemy(app)
+
 
 # define database tables
 class Categories(db.Model):
@@ -29,7 +31,8 @@ class Items(db.Model):
     item_id = db.Column(db.Integer, primary_key=True)
     item_name = db.Column(db.String(50))
     item_desc = db.Column(db.String(200))
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.category_id'))
+    category_id = db.Column(db.Integer,
+                            db.ForeignKey('categories.category_id'))
 
 
 @app.route('/gconnect', methods=['POST'])
@@ -55,7 +58,7 @@ def gconnect():
 
     # Check that the access token is valid.
     access_token = credentials.access_token
-    print("Access token: "+ access_token)
+    print("Access token: " + access_token)
     url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
            % access_token)
     h = httplib2.Http()
@@ -85,12 +88,14 @@ def gconnect():
 
     stored_access_token = login_session.get('access_token')
     if stored_access_token is not None:
-        print('Stored Access Token (Login): ' + stored_access_token)
-        print('Get from Login_Session (Login): ' +login_session.get('access_token'))
+        print('Stored Access Token (Login): ' +
+              stored_access_token)
+        print('Get from Login_Session (Login): ' +
+              login_session.get('access_token'))
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(json.dumps
+                                 ('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -108,7 +113,8 @@ def gconnect():
 
     login_session['username'] = data['name']
 
-    response = make_response("You are now logged in as %s" % login_session['username'], 200)
+    response = make_response(
+        "You are now logged in as %s" % login_session['username'], 200)
 
     return response
 
@@ -120,13 +126,15 @@ def gdisconnect():
         print('Access Token (Disconnect): ' + access_token)
     if access_token is None:
         print('Access Token is None')
-        response = make_response(json.dumps('Current user not connected.'), 401)
+        response = make_response(
+            json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
     print('In gdisconnect access token is %s' % (access_token))
     print('User name is: ')
     print(login_session['username'])
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' \
+          % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print('result is ')
@@ -135,11 +143,13 @@ def gdisconnect():
         del login_session['access_token']
         del login_session['gplus_id']
         del login_session['username']
-        response = make_response('<p>Successfully disconnected.</p>'
-                                 '<a href="/">Return to the home page</a>', 200)
+        response = make_response(
+            '<p>Successfully disconnected.</p>'
+            '<a href="/">Return to the home page</a>', 200)
         return response
     else:
-        response = make_response('<p>Failed to revoke token for given user.<p>', 400)
+        response = make_response(
+            '<p>Failed to revoke token for given user.<p>', 400)
         return response
 
 
@@ -153,8 +163,11 @@ def catalog_items():
     items = Items.query.order_by(Items.item_id.desc()).limit(5)
     categories = Categories.query.order_by(Categories.category_id).all()
 
-    return render_template('catalog.html', cat=categories, STATE=get_user_state[0],
-                           recent_items=items, logged_in=get_user_state[1])
+    return render_template('catalog.html',
+                           cat=categories,
+                           STATE=get_user_state[0],
+                           recent_items=items,
+                           logged_in=get_user_state[1])
 
 
 @app.route('/add_item', methods=['GET', 'POST'])
@@ -167,20 +180,24 @@ def add_item():
     get_user_state = setup_state()
 
     if request.method == 'GET':
-        # retrieve the categories from the database and display them in the add form
+        # retrieve the categories from the database
+        # and display them in the add form
 
         categories = Categories.query.order_by(Categories.category_id).all()
-        return render_template('add.html', cat=categories, STATE=get_user_state[0],
+        return render_template('add.html',
+                               cat=categories,
+                               STATE=get_user_state[0],
                                logged_in=get_user_state[1])
 
     if request.method == 'POST':
 
         # handle the add item request
 
-        category = Categories.query.filter(Categories.category == request.form['category']).first()
+        category = Categories.query.filter(
+            Categories.category == request.form['category']).first()
 
-        new_item = Items(item_name = request.form['itemName'],
-                         item_desc = request.form['itemDescription']
+        new_item = Items(item_name=request.form['itemName'],
+                         item_desc=request.form['itemDescription']
                          )
 
         category.items.append(new_item)
@@ -188,15 +205,19 @@ def add_item():
         db.session.add(category)
         db.session.commit()
 
-        alert='Item successfully added!'
+        alert = 'Item successfully added!'
 
         categories = Categories.query.order_by(Categories.category_id).all()
 
-        return render_template('add.html', cat=categories, alert=alert, STATE=get_user_state[0],
+        return render_template('add.html',
+                               cat=categories,
+                               alert=alert,
+                               STATE=get_user_state[0],
                                logged_in=get_user_state[1])
 
 
-@app.route('/edit_item/<selected_cat>/<selected_item>', methods=['GET', 'POST'])
+@app.route('/edit_item/<selected_cat>/<selected_item>',
+           methods=['GET', 'POST'])
 def edit_item(selected_cat, selected_item):
     # check if user is logged in, redirect to home if not
     if 'username' not in login_session:
@@ -243,7 +264,8 @@ def edit_item(selected_cat, selected_item):
         return redirect("/catalog/"+item.item_name, code=302)
 
 
-@app.route('/delete_item/<selected_cat>/<selected_item>', methods=['GET', 'POST'])
+@app.route('/delete_item/<selected_cat>/<selected_item>',
+           methods=['GET', 'POST'])
 def delete_item(selected_cat, selected_item):
     # check if user is logged in, redirect to home if not
     if 'username' not in login_session:
@@ -295,10 +317,14 @@ def display_category(selected_cat):
     # display the items from the selected category
 
     categories = Categories.query.order_by(Categories.category_id).all()
-    get_items = Categories.query.filter(Categories.category == selected_cat).first()
+    get_items = Categories.query.filter(
+        Categories.category == selected_cat).first()
 
-    return render_template('items.html', cat=categories, items=get_items.items,
-                           STATE=get_user_state[0], logged_in=get_user_state[1])
+    return render_template('items.html',
+                           cat=categories,
+                           items=get_items.items,
+                           STATE=get_user_state[0],
+                           logged_in=get_user_state[1])
 
 
 @app.route('/catalog/<selected_item>')
@@ -310,12 +336,16 @@ def display_item(selected_item):
     categories = Categories.query.order_by(Categories.category_id).all()
     get_item = Items.query.filter(Items.item_name == selected_item).first()
 
-    return render_template('description.html', cat=categories, item_name=get_item.item_name,
-                           item_desc=get_item.item_desc, STATE=get_user_state[0], logged_in=get_user_state[1])
+    return render_template('description.html',
+                           cat=categories,
+                           item_name=get_item.item_name,
+                           item_desc=get_item.item_desc,
+                           STATE=get_user_state[0],
+                           logged_in=get_user_state[1])
 
 
 @app.route('/JSON')
-def display_JSON():
+def display_json():
     # retrieve and display all category and item information
 
     json_data = {}
@@ -327,7 +357,7 @@ def display_JSON():
             item_list = []
             for i in c.items:
 
-                item={}
+                item = {}
 
                 item["item_name"] = i.item_name
                 item["item_desc"] = i.item_desc
@@ -336,8 +366,8 @@ def display_JSON():
 
         json_data[c.category] = item_list
 
-
     return jsonify(json_data)
+
 
 def setup_state():
     # pass user state to dynamically update content
