@@ -6,7 +6,7 @@ This project requires Python3 and Postgres.
 
 * Clone this repsitory
 * The file client_secret.json is required for Google authentication and will be supplied in a zip file to the reviewer. Copy the file into the working folder
-* Install required python packages by running ```pip install requirements.txt```
+* Install required python packages by running ```pip install -r requirements.txt```
 * Insert the base category data into the database by running ```psql -d catalog -f categories.sql```
 * On the command line, run the following on the command line in the working directory to start the application
 ```export FLASK_APP=catalog.py```
