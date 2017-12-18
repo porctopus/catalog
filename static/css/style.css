@@ -1,0 +1,12 @@
+/* pad the top of the content so the top nav does not overlap */
+main
+{
+  padding-top: 60px;
+}
+a
+{
+  color: #343A40;
+}
+#header a {
+  color: white;
+}

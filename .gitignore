@@ -1,0 +1,8 @@
+.idea/
+__pycache__/
+bin/
+client_secret.json
+include/
+lib/
+pip-selfcheck.json
+testfile.txt

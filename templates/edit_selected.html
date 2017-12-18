@@ -1,0 +1,27 @@
+<!doctype html>
+{% extends "header.html" %}
+
+{% block content %}
+
+<!-- Display edit item page -->
+<div class="container col-6">
+  {% if alert %}
+    <div class="alert alert-success" role="alert">
+      {{ alert }}
+    </div>
+  {% endif %}
+  <form action="{{ url_for('edit_item') }}" method="post">
+    <div class="form-group">
+      <label for="itemSelection">Items</label>
+      <select class="form-control" id="itemSelection">
+        {% for i in items %}
+          console.log(i)
+          <option>{{ i }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+
+{% endblock %}

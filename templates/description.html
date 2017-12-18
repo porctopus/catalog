@@ -1,0 +1,20 @@
+<!doctype html>
+{% extends "header.html" %}
+
+{% block content %}
+
+<!-- Display item description -->
+<div class="container col-6">
+  <div class="form-group">
+    <h3>{{ item_name }}</h3>
+    <label for="itemDescription"></label>
+    <textarea class="form-control"
+              name="itemDescription"
+              id="itemDescription"
+              rows="3"
+              readonly>{{ item_desc }}
+    </textarea>
+  </div>
+</div>
+
+{% endblock %}

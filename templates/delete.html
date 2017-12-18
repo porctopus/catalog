@@ -1,0 +1,41 @@
+<!doctype html>
+{% extends "header.html" %}
+
+{% block content %}
+
+<!-- Display delete item page -->
+<div class="container col-6">
+  <h2>Delete Item</h2>
+  <hr />
+  <form method="post">
+    <div class="form-group">
+      <label for="displayCategory">Category: </label>
+      <input name="displayCategory"
+              id="displayCategory"
+              type="text"
+              value ="{{ item_cat }}"
+              disabled>
+    </div>
+    <div class="form-group">
+      <label for="itemName">Item Name</label>
+      <input type="text"
+              class="form-control"
+              name="itemName"
+              id="itemName"
+              placeholder="Enter Item Name"
+              value="{{ item_name }}"
+              disabled>
+    </div>
+    <div class="form-group">
+      <label for="itemDescription">Item Description</label>
+      <textarea class="form-control"
+                name="itemDescription"
+                id="itemDescription"
+                rows="4"
+                disabled>{{ item_desc }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Delete</button>
+  </form>
+</div>
+
+{% endblock %}

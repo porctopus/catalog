@@ -1,0 +1,31 @@
+<!doctype html>
+{% extends "header.html" %}
+
+{% block content %}
+
+<!-- Display links to items -->
+<div class="container">
+  <h2>Items</h2>
+  <hr />
+  <div class="list-group">
+    {% if logged_in %}
+        <table class="table table-striped">
+          <tbody>
+          {% for i in items %}
+          <tr>
+            <td><a href="/catalog/{{ i.item_name }}">{{ i.item_name }}</a></td>
+            <td><a href="/edit_item/{{ i.category.category }}/{{ i.item_name }}">Edit</a></td>
+            <td><a href="/delete_item/{{ i.category.category }}/{{ i.item_name }}">Delete</a></td>
+          </tr>
+          {% endfor %}
+          </tbody>
+          </table>
+      {% else %}
+        {% for i in items %}
+          <a href="/catalog/{{ i.item_name }}" class="list-group-item list-group-item-action">{{ i.item_name }}</a>
+        {% endfor %}
+      {% endif %}
+    </div>
+</div>
+
+{% endblock %}
